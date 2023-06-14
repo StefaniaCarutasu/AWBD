@@ -8,7 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 @Entity
 @Getter
 @Setter
-@Table(name = "product")
+@Table(name = "products")
 public class Product extends RepresentationModel<Product> {
 
     @Id

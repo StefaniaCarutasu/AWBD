@@ -1,5 +1,6 @@
 package com.awbd.orders.controllers;
 
+import com.awbd.orders.services.ProductClient;
 import com.awbd.orders.dtod.ProductDto;
 import com.awbd.orders.exceptions.ProductNotFoundException;
 import com.awbd.orders.models.Product;
@@ -9,6 +10,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +22,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Slf4j
 @RequestMapping("/products")
 public class ProductController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+
     @Autowired
     ProductService productService;
+
+    @Autowired
+    private ProductClient productClient;
+
+    @GetMapping("/client/{id}")
+    public Product getProductWithClient(@PathVariable Long id) {
+        return productClient.findById(id);
+    }
+
+    @GetMapping("/client/all")
+    public List<Product> getProductsWithClient() {
+        return productClient.findAll();
+    }
 
     @Operation(summary = "Get all products")
     @ApiResponses(value = {

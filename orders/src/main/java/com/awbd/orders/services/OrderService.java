@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrderService {
 
-    Order createOrder(List<Long> products, String username);
+    Order createOrder(List<Product> products, String username);
 
     Order getOrderById(Long orderId);
 

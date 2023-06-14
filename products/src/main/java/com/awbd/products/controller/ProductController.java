@@ -26,13 +26,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @Slf4j
+@RequestMapping("/products")
 public class ProductController {
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Autowired
     ProductService productService;
 
-    @GetMapping(value = "/product/list", produces = {"application/hal+json"})
+    @GetMapping(value = "/list", produces = {"application/hal+json"})
     public CollectionModel<Product> findAll( ) {
 
         List<Product> products = productService.findAll();
@@ -48,7 +49,7 @@ public class ProductController {
     }
 
 
-    @PostMapping("/product")
+    @PostMapping("")
     public ResponseEntity<Product> save(@Valid @RequestBody Product product){
         Product savedProduct = productService.save(product);
         URI locationUri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -68,21 +69,25 @@ public class ProductController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Product not found",
                     content = @Content)})
-    @DeleteMapping("/subscription/{subscriptionId}")
-    public Product deleteProduct(@PathVariable Long subscriptionId) {
+    @DeleteMapping("/delete/productId")
+    public Product deleteProduct(@PathVariable Long productId) {
 
-        Product subscription = productService.delete(subscriptionId);
-        return subscription;
+        Product product = productService.delete(productId);
+        return product;
     }
 
-    @GetMapping("/product/{productId}")
-    public Product getProduct(@PathVariable Long productId) {
+    @GetMapping("/{id}")
+    public Product getProduct(@PathVariable Long id) {
         logger.info("product by id request start");
-        Product product = productService.findById(productId);
+        Product product = productService.findById(id);
         logger.info("product by id request end");
         return product;
-
     }
 
+    @GetMapping("/allByIds")
+    public List<Product> getProductsByIds(@RequestBody List<Long> prodIds) {
+        logger.debug("Get products by list of ids");
+        return productService.findAllByIds(prodIds);
+    }
 
 }

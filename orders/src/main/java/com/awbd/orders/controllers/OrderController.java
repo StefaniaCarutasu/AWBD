@@ -1,7 +1,12 @@
 package com.awbd.orders.controllers;
 
 import com.awbd.orders.models.Order;
+import com.awbd.orders.models.Product;
 import com.awbd.orders.services.OrderService;
+import com.awbd.orders.services.ProductClient;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -10,11 +15,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/orders")
 public class OrderController {
 
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private ProductClient productClient;
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllOrders() {
@@ -33,7 +44,9 @@ public class OrderController {
 
     @PostMapping("/new/{username}")
     public ResponseEntity<Object> newOrder(@PathVariable String username, @RequestBody List<Long> prodIds) {
-        Order newOrder = orderService.createOrder(prodIds, username);
+
+        List<Product> products = productClient.findAllByIds(prodIds);
+        Order newOrder = orderService.createOrder(products, username);
 
         if (newOrder != null) {
             return new ResponseEntity<>("Order processed", HttpStatusCode.valueOf(200));

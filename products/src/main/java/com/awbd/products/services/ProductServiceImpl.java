@@ -44,4 +44,9 @@ public class ProductServiceImpl implements ProductService{
             throw new ProductNotFound("Product " + id + " not found!");
         return productOptional.get();
     }
+
+    @Override
+    public List<Product> findAllByIds(List<Long> prodIds) {
+        return (List<Product>) productRepository.findAllById(prodIds);
+    }
 }
