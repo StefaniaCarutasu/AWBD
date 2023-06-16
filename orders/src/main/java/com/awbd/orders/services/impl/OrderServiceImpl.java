@@ -20,12 +20,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private ProductsDao productsDao;
-    
 
     @Override
-    public Order createOrder(List<Long> products, String username) {
-        List<Product> prodList = productsDao.findAllById(products);
-        Order order = new Order(prodList, username);
+    public Order createOrder(List<Product> products, String username) {
+        Order order = new Order(products, username);
         return ordersDao.save(order);
     }
 

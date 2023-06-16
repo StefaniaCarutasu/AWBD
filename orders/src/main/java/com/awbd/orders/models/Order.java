@@ -20,9 +20,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-//    @ManyToMany(mappedBy = "orders")
-//    private List<Product> products;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "product_order",
