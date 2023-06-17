@@ -2,6 +2,7 @@ package com.awbd.orders.models;
 
 
 import com.awbd.orders.dtod.ProductDto;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

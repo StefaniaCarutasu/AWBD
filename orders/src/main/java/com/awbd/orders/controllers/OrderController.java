@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -70,16 +71,19 @@ public class OrderController {
 
     @PostMapping("/new/{username}")
     public ResponseEntity<Object> newOrder(@PathVariable String username, @RequestBody List<Long> prodIds) {
+        try {
+            List<Product> products = prodIds.stream().map(id -> productClient.findById(id)).collect(Collectors.toList());
+            Order newOrder = orderService.createOrder(products, username);
 
-        List<Product> products = productClient.findAllByIds(prodIds);
-        Order newOrder = orderService.createOrder(products, username);
-
-        if (newOrder != null) {
-            logger.debug("Order processed for user: " + username );
-            return new ResponseEntity<>("Order processed", HttpStatusCode.valueOf(200));
+            if (newOrder != null) {
+                logger.debug("Order processed for user: " + username );
+                return new ResponseEntity<>("Order processed", HttpStatusCode.valueOf(200));
+            }
+            return new ResponseEntity<>("Order could not be processed, try again later", HttpStatusCode.valueOf(500));
+        } catch (Exception e) {
+            logger.debug("Order could not be processed for user: " + username );
+            return new ResponseEntity<>(e.getMessage(), HttpStatusCode.valueOf(500));
         }
-        logger.debug("Order could not be processed for user: " + username );
-        return new ResponseEntity<>("Order could not be processed, try again later", HttpStatusCode.valueOf(500));
     }
 
 

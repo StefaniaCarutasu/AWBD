@@ -1,5 +1,7 @@
 package com.awbd.orders.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +23,7 @@ public class Order extends RepresentationModel<Order> {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @JsonIgnoreProperties(value = "orders")
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "product_order",
