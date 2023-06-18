@@ -20,6 +20,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -155,5 +157,15 @@ public class OrderController {
 
     private ResponseEntity<Object> getOrderFallback(Throwable throwable) {
         return new ResponseEntity<>(orderService.getAllOrders(), HttpStatusCode.valueOf(200));
+    }
+
+    @GetMapping("/webflux/{id}")
+    public Mono<Order> getOrderByIdWebFlux(@PathVariable Long id) {
+        return orderService.getOrderByIdWebFlux(id);
+    }
+
+    @GetMapping("/webflux/list/{username}")
+    public Flux<Order> getAllEmployees(@PathVariable String username) {
+        return orderService.getOrdersByUSerWebFlux(username);
     }
 }

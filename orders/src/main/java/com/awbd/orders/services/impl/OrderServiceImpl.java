@@ -8,6 +8,9 @@ import com.awbd.orders.models.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.awbd.orders.services.OrderService;
+import reactor.core.CoreSubscriber;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,4 +59,18 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderNotFoundException(orderId.toString());
         }
     }
+
+    @Override
+    public Mono<Order> getOrderByIdWebFlux(Long orderId) {
+        Order order = this.getOrderById(orderId);
+        return Mono.just(order);
+    }
+
+    @Override
+    public Flux<Order> getOrdersByUSerWebFlux(String username) {
+        List<Order> orders = this.getOrdersByUser(username);
+        return Flux.fromIterable(orders);
+    }
+
+
 }
