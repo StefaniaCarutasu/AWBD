@@ -10,12 +10,14 @@
         <module name="config-server" />
         <module name="orders" />
         <module name="eureka-server" />
+        <module name="gateway" />
         <module name="products" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="config-server" target="17" />
       <module name="eureka-server" target="17" />
+      <module name="gateway" target="17" />
       <module name="orders" target="17" />
       <module name="products" target="17" />
     </bytecodeTargetLevel>
@@ -24,6 +26,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="config-server" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
+      <module name="gateway" options="-parameters" />
       <module name="orders" options="-parameters" />
       <module name="products" options="-parameters" />
     </option>

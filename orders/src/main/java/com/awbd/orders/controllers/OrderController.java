@@ -6,6 +6,11 @@ import com.awbd.orders.models.Product;
 import com.awbd.orders.services.OrderService;
 import com.awbd.orders.services.ProductClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -36,14 +41,32 @@ public class OrderController {
     @Autowired
     private ProductClient productClient;
 
+    @Operation(summary = "Get all orders")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Orders returned",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Order.class))}),
+            @ApiResponse(responseCode = "500", description = "Orders could not be retrieved",
+                    content = @Content)})
     @GetMapping(value = "/list", produces = {"application/hal+json"})
-    @CircuitBreaker(name="discountById", fallbackMethod = "getSubscriptionFallback")
     public ResponseEntity<Object> getAllOrders() {
         List<Order> orders = orderService.getAllOrders();
-        return new ResponseEntity<>(getObjectsWithLinks(orders), HttpStatusCode.valueOf(200));
+        try {
+            List<Order> ordersWithLinks = getObjectsWithLinks(orders);
+            return new ResponseEntity<>(getObjectsWithLinks(orders), HttpStatusCode.valueOf(200));
+        }catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatusCode.valueOf(500));
+        }
+
 
     }
 
+    @Operation(summary = "Get all orders for user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Orders returned",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Order.class))}),
+            @ApiResponse(responseCode = "500", description = "Orders could not be retrieved",
+                    content = @Content)})
     @GetMapping("/list/{username}")
     public ResponseEntity<Object> getAllOrdersByUser(@PathVariable String username) {
         List<Order> orderList = orderService.getOrdersByUser(username);
@@ -69,6 +92,12 @@ public class OrderController {
         return orderList;
     }
 
+    @Operation(summary = "Add new order")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order created",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Order.class))}),
+            @ApiResponse(responseCode = "500", description = "Order could not be created",
+                    content = @Content)})
     @PostMapping("/new/{username}")
     public ResponseEntity<Object> newOrder(@PathVariable String username, @RequestBody List<Long> prodIds) {
         try {
@@ -87,6 +116,15 @@ public class OrderController {
     }
 
 
+    @Operation(summary = "Delete order by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Order deleted",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Product.class))}),
+            @ApiResponse(responseCode = "404", description = "Order could not be found",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "Order could not be deleted",
+                    content = @Content)})
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteOrder(@PathVariable Long id) {
         try {
@@ -95,6 +133,9 @@ public class OrderController {
         } catch (OrderNotFoundException e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatusCode.valueOf(404));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatusCode.valueOf(500));
         }
     }
 
