@@ -46,4 +46,14 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> getAllOrders() {
         return ordersDao.findAll();
     }
+
+    @Override
+    public void deleteOrder(Long orderId) {
+        Optional<Order> order = ordersDao.findById(orderId);
+        if (order.isPresent()) {
+            ordersDao.deleteById(orderId);
+        } else {
+            throw new OrderNotFoundException(orderId.toString());
+        }
+    }
 }
